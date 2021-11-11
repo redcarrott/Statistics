@@ -1,0 +1,224 @@
+---
+title: "lab1_part2"
+author: "Jenna Morabito, Amy Jung, Varun Dashora"
+date: "10/15/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+# read in data
+dat <- read.csv("anes_timeseries_2020_csv_20210719/anes_timeseries_2020_csv_20210719.csv")
+
+# rename columns
+dat <- dat %>% 
+  rename(
+  id_2020 = 'V200001',
+  mode_of_interview = 'V200002',
+  eligibility_concern_flag = 'V200005',
+  presidential_preference = 'V201075x',
+  presidential_candidate_intent = 'V201033',
+  presidential_candidate_preference = 'V201036',
+  presidential_candidate_intent_strength = 'V201034',
+  presidential_candidate_preference_strength = 'V201037',
+  presidential_candidate_preference_yn = 'V201035',
+  house_preference = 'V201076x',
+  senate_preference = 'V201077x',
+  governor_preference = 'V201078x',
+  voting_liklihood = 'V201100',
+  vote_in_2016__yn_v1 = 'V201101',
+  vote_in_2016_yn_v2 = 'V201102',
+  vote_in_2016 = 'V201103',
+  vote_in_2012 = 'V201105',
+  vote_in_2020 = 'V202109x',
+  party_pre = 'V201018',
+  party_post = 'V202064',
+  difficulty_voting = 'V202119',
+  difficulty_w_id_card = 'V202120b',
+  difficulty_obtaining_absentee_ballot = 'V202120c',
+  confusion_about_ballot_or_machine = 'V202120d',
+  difficulty_getting_to_poll = 'V202120e',
+  long_wait_times = 'V202120f',
+  work_schedule = 'V202120g',
+  bad_weather = 'V202120h',
+  difficulty_mailing = 'V202120i',
+  difficulty_other = 'V202120j',
+  difficulty_none = 'V202120k',
+  reason_didnt_vote = 'V202123'
+)
+
+# whittle down columns
+dat <- dat %>% select(
+  id_2020,
+  mode_of_interview,
+  eligibility_concern_flag,
+  presidential_preference,
+  presidential_candidate_intent,
+  presidential_candidate_preference,
+  presidential_candidate_intent_strength,
+  presidential_candidate_preference_strength,
+  presidential_candidate_preference_yn,
+  house_preference,
+  senate_preference,
+  governor_preference,
+  voting_liklihood,
+  vote_in_2016__yn_v1,
+  vote_in_2016_yn_v2,
+  vote_in_2016,
+  vote_in_2012,
+  vote_in_2020,
+  party_pre,
+  party_post,
+  difficulty_voting,
+  difficulty_w_id_card,
+  difficulty_obtaining_absentee_ballot,
+  confusion_about_ballot_or_machine,
+  difficulty_getting_to_poll,
+  long_wait_times,
+  work_schedule,
+  bad_weather,
+  difficulty_mailing,
+  difficulty_other,
+  difficulty_none,
+  reason_didnt_vote
+)
+
+# make presidential_preference column more human-readable
+dat <- dat %>%
+    mutate(
+    pres_pref_edited =  case_when(
+      presidential_preference == -1 ~ "NA",
+      presidential_preference %in% c(10, 20, 30) ~ "Democratic vote",
+      presidential_preference %in% c(11, 21, 31) ~ "Republican vote",
+      presidential_preference %in% c(12, 22, 32) ~ "Other vote"
+    ))
+```
+
+```{r}
+# dataframes for running a wilcox test on difficulty voting between reps and dems
+small_dat <- dat %>%
+  select("id_2020",
+         "presidential_preference",
+         "pres_pref_edited",
+         "vote_in_2020",
+         "difficulty_voting")
+```
+
+**Hypothesis Testing**
+
+To investigate the research question about whether Democrats or Republicans had more difficulty with voting in the 2020 election, we needed to compare the voting difficulty of 2 voting samples: Democrats and Republicans. Since we cannot take averages due to the fact that voting data is ordinal, we must compare overall distributions between Democrat and Republican voting difficulty to determine whether or not there is a significant difference. In addition, the data involves unknown population variance and a 2-group comparison, the Wilcoxon rank-sum test would be most appropriate for this situation.
+
+The following is an examination of the assumptions being made in a Wilcoxon rank-sum test:
+
+1.  Ordinal Scale: The data is categorical with numbered categories imposing an order, meeting the ordinal scale condition.
+
+2.  Data are IID: The samples are drawn from the total population, meaning they must be identically distributed. In addition, the data collectors are limited to one sample per household, so household independence is minimized. The other major potential for independence is community-based political grouping, but there are so many different communities in the United States that there is no real danger of oversampling from one community and setting up a skewed and unrepresentative data collection. This assumption is sufficiently met.
+
+Null Hypothesis: The probability that a randomly selected Democratic voter faces more difficult voting conditions than a randomly selected Republican voter is statistically the same as the probability of the opposite situation occurring; namely, a Republican voter facing more adverse voting conditions than a Democratic voter.
+
+Alternative Hypothesis: There is a statistically significant chance that one group has more voting difficulty than the other.
+
+Considering the results of the Wilcoxon rank-sum test, we accept the null hypothesis.
+
+
+```{r}
+# dataframe for plotting difficulty voting for reps and dems
+agg_dat <- small_dat %>% 
+  filter(pres_pref_edited == "Democratic vote" | pres_pref_edited == "Republican vote",
+         difficulty_voting %in% c(1:5)) %>%
+  group_by(pres_pref_edited) %>%
+  count(difficulty_voting) %>%
+  mutate(percent = (n / sum(n)))
+  # mutate(
+  #   difficulty_edited =  case_when(
+  #     difficulty_voting == 1 ~ "Not difficult",
+  #     difficulty_voting == 2 ~ "A little difficult",
+  #     difficulty_voting == 3 ~ "Moderately difficult",
+  #     difficulty_voting == 4 ~ "Very difficult",
+  #     difficulty_voting == 5 ~ "Extremely difficult"
+  #   ))
+
+agg_dat
+```
+
+```{r}
+# Grouped barplot for difficulty voting between reps and dems
+ggplot(data=agg_dat, aes(x=difficulty_voting, y=percent, fill=pres_pref_edited)) +
+  geom_bar(position="dodge", stat="identity") +
+  labs(title="Most did not face difficulties voting",
+       subtitle="No significant difference in difficulty found between parties",
+       x="Difficulty Voting (5 is most difficult)", y="Percent", fill="Presidential Preference") +
+  scale_fill_manual(values=c("#7FB3D5", "#A93226")) +
+  theme_minimal()
+```
+
+
+```{r}
+wilcox.test(agg_dat$n[1:5], agg_dat$n[6:10], paired=FALSE, alternative="two.sided")
+```
+
+
+```{r}
+# dataframes for running a wilcox test on reasons for not voting between reps and dems 
+didnt_vote <- dat %>%
+  select("pres_pref_edited",
+         "vote_in_2020",
+         "reason_didnt_vote") %>%
+  filter(
+    reason_didnt_vote %in% c(1:15),
+    pres_pref_edited == "Democratic vote" |
+      pres_pref_edited == "Republican vote"
+  ) %>%
+  group_by(pres_pref_edited) %>%
+  count(reason_didnt_vote) %>%
+  mutate(percent = (n / sum(n)) * 100) %>%
+  mutate(
+    reason_edited =  case_when(
+      reason_didnt_vote == 1 ~ "Forgot",
+      reason_didnt_vote == 2 ~ "Not interested",
+      reason_didnt_vote == 3 ~ "Too busy",
+      reason_didnt_vote == 4 ~ "Disliked candidates",
+      reason_didnt_vote == 5 ~ "Not registered",
+      reason_didnt_vote == 6 ~ "Incorrect ID",
+      reason_didnt_vote == 7 ~ "Out of town",
+      reason_didnt_vote == 8 ~ "Sick/disabled",
+      reason_didnt_vote == 9 ~ "Transportation",
+      reason_didnt_vote == 10 ~ "Bad weather",
+      reason_didnt_vote == 11 ~ "Long line",
+      reason_didnt_vote == 12 ~ "Not allowed",
+      reason_didnt_vote == 13 ~ "Didn't receive ballot",
+      reason_didnt_vote == 14 ~ "Didn't know where ",
+      reason_didnt_vote == 15 ~ "Didn't know enough"
+    )
+  )
+
+dem_no_vote = didnt_vote %>% filter(
+  pres_pref_edited == "Democratic vote"
+)
+
+rep_no_vote = didnt_vote %>% filter(
+   pres_pref_edited == "Republican vote"
+)
+
+wilcox.test(dem_no_vote$reason_didnt_vote, rep_no_vote$reason_didnt_vote, paired=FALSE) 
+```
+
+```{r}
+# barplot showing reasons reps and dems didn't vote
+ggplot(data = didnt_vote, aes(x = percent, y = reason_edited, fill = pres_pref_edited)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  labs(
+    title = "Reasons for not voting",
+    subtitle = "Being busy, not liking the candidate, and not being registered",
+    x = "Percent",
+    y = "Reason for not voting",
+    fill = "Presidential Preference"
+  ) +
+  scale_fill_manual(values = c("#7FB3D5", "#A93226")) +
+  theme_minimal()
+```

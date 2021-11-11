@@ -1,0 +1,137 @@
+---
+title: "lab1_part2"
+author: "Jenna Morabito"
+date: "10/15/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+dat <- read.csv("anes_timeseries_2020_csv_20210719/anes_timeseries_2020_csv_20210719.csv")
+
+dat <- dat %>% 
+  rename(
+  id_2020 = 'V200001',
+  mode_of_interview = 'V200002',
+  eligibility_concern_flag = 'V200005',
+  presidential_preference = 'V201075x',
+  presidential_candidate_intent = 'V201033',
+  presidential_candidate_preference = 'V201036',
+  presidential_candidate_intent_strength = 'V201034',
+  presidential_candidate_preference_strength = 'V201037',
+  presidential_candidate_preference_yn = 'V201035',
+  house_preference = 'V201076x',
+  senate_preference = 'V201077x',
+  governor_preference = 'V201078x',
+  voting_liklihood = 'V201100',
+  vote_in_2016__yn_v1 = 'V201101',
+  vote_in_2016_yn_v2 = 'V201102',
+  vote_in_2016 = 'V201103',
+  vote_in_2012 = 'V201105',
+  vote_in_2020 = 'V202109x',
+  party_pre = 'V201018',
+  party_post = 'V202064',
+  difficulty_voting = 'V202119',
+  difficulty_w_id_card = 'V202120b',
+  difficulty_obtaining_absentee_ballot = 'V202120c',
+  confusion_about_ballot_or_machine = 'V202120d',
+  difficulty_getting_to_poll = 'V202120e',
+  long_wait_times = 'V202120f',
+  work_schedule = 'V202120g',
+  bad_weather = 'V202120h',
+  difficulty_mailing = 'V202120i',
+  difficulty_other = 'V202120j',
+  difficulty_none = 'V202120k'
+)
+
+dat <- dat %>% select(
+  id_2020,
+  mode_of_interview,
+  eligibility_concern_flag,
+  presidential_preference,
+  presidential_candidate_intent,
+  presidential_candidate_preference,
+  presidential_candidate_intent_strength,
+  presidential_candidate_preference_strength,
+  presidential_candidate_preference_yn,
+  house_preference,
+  senate_preference,
+  governor_preference,
+  voting_liklihood,
+  vote_in_2016__yn_v1,
+  vote_in_2016_yn_v2,
+  vote_in_2016,
+  vote_in_2012,
+  vote_in_2020,
+  party_pre,
+  party_post,
+  difficulty_voting,
+  difficulty_w_id_card,
+  difficulty_obtaining_absentee_ballot,
+  confusion_about_ballot_or_machine,
+  difficulty_getting_to_poll,
+  long_wait_times,
+  work_schedule,
+  bad_weather,
+  difficulty_mailing,
+  difficulty_other,
+  difficulty_none
+)
+```
+
+Null hypothesis: no difference in means between R and D for difficulty voting Alternative hypothesis: there is a difference in means between R and D for difficulty voting
+
+```{r}
+small_dat_A <- select(dat, c("id_2020", "presidential_preference", "vote_in_2020", "difficulty_voting"))
+small_dat <- small_dat_A %>% filter(
+  difficulty_voting > 0
+)
+small_dat
+small_dat_A
+```
+
+**Hypothesis Testing**
+
+To investigate the research question about whether Democrats or Republicans had more difficulty with voting in the 2020 election, we needed to compare the voting difficulty of 2 voting samples: Democrats and Republicans. Since we cannot take averages due to the fact that voting data is ordinal, we must compare overall distributions between Democrat and Republican voting difficulty to determine whether or not there is a significant difference. In addition, the data involves unknown population variance and a 2-group comparison, the Wilcoxon rank-sum test would be most appropriate for this situation.
+
+The following is an examination of the assumptions being made in a Wilcoxon rank-sum test:
+
+1.   Ordinal Scale: The data is categorical with numbered categories imposing an order, meeting the ordinal scale condition.
+
+2.  Data are IID: The samples are drawn from the total population, meaning they must be identically distributed. In addition, the data collectors are limited to one sample per household, so household independence is minimized. The other major potential for independence is community-based political grouping, but there are so many different communities in the United States that there is no real danger of oversampling from one community and setting up a skewed and unrepresentative data collection. This assumption is sufficiently met.
+
+Null Hypothesis: The probability that a randomly selected Democratic voter faces more difficult voting conditions than a randomly selected Republican voter is statistically the same as the probability of the opposite situation occurring; namely, a Republican voter facing more adverse voting conditions than a Democratic voter.
+
+Alternative Hypothesis: There is a statistically significant chance that one group has more voting difficulty than the other.
+
+Considering the results of the Wilcoxon rank-sum test, we reject the null hypothesis.
+
+```{r}
+# 1: 2-Sample T-Test results
+demo_voters = small_dat %>% filter(
+  presidential_preference %in% c(10, 20, 30)
+)
+
+rep_voters = small_dat %>% filter(
+  presidential_preference %in% c(11, 21, 31)
+)
+
+wilcox.test(demo_voters$difficulty_voting, rep_voters$difficulty_voting, paired=FALSE)
+```
+
+```{r, echo=FALSE}
+demo_voters_A = small_dat_A %>% filter(
+  presidential_preference %in% c(10, 20, 30)
+)
+
+rep_voters_A = small_dat_A %>% filter(
+  presidential_preference %in% c(11, 21, 31)
+)
+
+t.test(demo_voters_A$vote_in_2020, rep_voters_A$vote_in_2020, alternative = "two.sided", var.equal = FALSE)
+```
