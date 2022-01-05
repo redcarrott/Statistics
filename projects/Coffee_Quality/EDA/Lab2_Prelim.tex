@@ -1,0 +1,628 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={W203 Lab 2 Preliminary Report},
+  pdfauthor={Angela Guan, Amy Jung, Jeremy Yeung},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{W203 Lab 2 Preliminary Report}
+\author{Angela Guan, Amy Jung, Jeremy Yeung}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(tidyverse)}
+\FunctionTok{library}\NormalTok{(ggplot2) }
+
+\FunctionTok{library}\NormalTok{(sandwich)}
+\FunctionTok{library}\NormalTok{(stargazer)}
+
+\FunctionTok{source}\NormalTok{(}\StringTok{\textquotesingle{}get\_robust\_se.R\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{coffee\_ratings }\OtherTok{\textless{}{-}}\NormalTok{ readr}\SpecialCharTok{::}\FunctionTok{read\_csv}\NormalTok{(}\StringTok{\textquotesingle{}https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020{-}07{-}07/coffee\_ratings.csv\textquotesingle{}}\NormalTok{)}
+\CommentTok{\#head(coffee\_ratings)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: The following named parsers don't match the column names: X1
+\end{verbatim}
+
+\begin{longtable}[]{@{}ll@{}}
+\caption{Data summary}\tabularnewline
+\toprule
+& \\
+\midrule
+\endfirsthead
+\toprule
+& \\
+\midrule
+\endhead
+Name & Piped data \\
+Number of rows & 1339 \\
+Number of columns & 43 \\
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ & \\
+Column type frequency: & \\
+character & 24 \\
+numeric & 19 \\
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ & \\
+Group variables & None \\
+\bottomrule
+\end{longtable}
+
+\textbf{Variable type: character}
+
+\begin{longtable}[]{@{}lrrrrrrr@{}}
+\toprule
+skim\_variable & n\_missing & complete\_rate & min & max & empty &
+n\_unique & whitespace \\
+\midrule
+\endhead
+species & 0 & 1.00 & 7 & 7 & 0 & 2 & 0 \\
+owner & 7 & 0.99 & 3 & 50 & 0 & 315 & 0 \\
+country\_of\_origin & 1 & 1.00 & 4 & 28 & 0 & 36 & 0 \\
+farm\_name & 359 & 0.73 & 1 & 73 & 0 & 571 & 0 \\
+lot\_number & 1063 & 0.21 & 1 & 71 & 0 & 227 & 0 \\
+mill & 315 & 0.76 & 1 & 77 & 0 & 460 & 0 \\
+ico\_number & 151 & 0.89 & 1 & 40 & 0 & 847 & 0 \\
+company & 209 & 0.84 & 3 & 73 & 0 & 281 & 0 \\
+altitude & 226 & 0.83 & 1 & 41 & 0 & 396 & 0 \\
+region & 59 & 0.96 & 2 & 76 & 0 & 356 & 0 \\
+producer & 231 & 0.83 & 1 & 100 & 0 & 691 & 0 \\
+bag\_weight & 0 & 1.00 & 1 & 8 & 0 & 56 & 0 \\
+in\_country\_partner & 0 & 1.00 & 7 & 85 & 0 & 27 & 0 \\
+harvest\_year & 47 & 0.96 & 3 & 24 & 0 & 46 & 0 \\
+grading\_date & 0 & 1.00 & 13 & 20 & 0 & 567 & 0 \\
+owner\_1 & 7 & 0.99 & 3 & 50 & 0 & 319 & 0 \\
+variety & 226 & 0.83 & 4 & 21 & 0 & 29 & 0 \\
+processing\_method & 170 & 0.87 & 5 & 25 & 0 & 5 & 0 \\
+color & 218 & 0.84 & 4 & 12 & 0 & 4 & 0 \\
+expiration & 0 & 1.00 & 13 & 20 & 0 & 566 & 0 \\
+certification\_body & 0 & 1.00 & 7 & 85 & 0 & 26 & 0 \\
+certification\_address & 0 & 1.00 & 40 & 40 & 0 & 32 & 0 \\
+certification\_contact & 0 & 1.00 & 40 & 40 & 0 & 29 & 0 \\
+unit\_of\_measurement & 0 & 1.00 & 1 & 2 & 0 & 2 & 0 \\
+\bottomrule
+\end{longtable}
+
+\textbf{Variable type: numeric}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.20}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.10}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.13}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.08}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.08}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.03}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.08}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.08}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.08}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.10}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.06}}@{}}
+\toprule
+skim\_variable & n\_missing & complete\_rate & mean & sd & p0 & p25 &
+p50 & p75 & p100 & hist \\
+\midrule
+\endhead
+total\_cup\_points & 0 & 1.00 & 82.09 & 3.50 & 0 & 81.08 & 82.50 & 83.67
+& 90.58 & ▁▁▁▁▇ \\
+number\_of\_bags & 0 & 1.00 & 154.18 & 129.99 & 0 & 14.00 & 175.00 &
+275.00 & 1062.00 & ▇▇▁▁▁ \\
+aroma & 0 & 1.00 & 7.57 & 0.38 & 0 & 7.42 & 7.58 & 7.75 & 8.75 &
+▁▁▁▁▇ \\
+flavor & 0 & 1.00 & 7.52 & 0.40 & 0 & 7.33 & 7.58 & 7.75 & 8.83 &
+▁▁▁▁▇ \\
+aftertaste & 0 & 1.00 & 7.40 & 0.40 & 0 & 7.25 & 7.42 & 7.58 & 8.67 &
+▁▁▁▁▇ \\
+acidity & 0 & 1.00 & 7.54 & 0.38 & 0 & 7.33 & 7.58 & 7.75 & 8.75 &
+▁▁▁▁▇ \\
+body & 0 & 1.00 & 7.52 & 0.37 & 0 & 7.33 & 7.50 & 7.67 & 8.58 & ▁▁▁▁▇ \\
+balance & 0 & 1.00 & 7.52 & 0.41 & 0 & 7.33 & 7.50 & 7.75 & 8.75 &
+▁▁▁▁▇ \\
+uniformity & 0 & 1.00 & 9.83 & 0.55 & 0 & 10.00 & 10.00 & 10.00 & 10.00
+& ▁▁▁▁▇ \\
+clean\_cup & 0 & 1.00 & 9.84 & 0.76 & 0 & 10.00 & 10.00 & 10.00 & 10.00
+& ▁▁▁▁▇ \\
+sweetness & 0 & 1.00 & 9.86 & 0.62 & 0 & 10.00 & 10.00 & 10.00 & 10.00 &
+▁▁▁▁▇ \\
+cupper\_points & 0 & 1.00 & 7.50 & 0.47 & 0 & 7.25 & 7.50 & 7.75 & 10.00
+& ▁▁▁▇▁ \\
+moisture & 0 & 1.00 & 0.09 & 0.05 & 0 & 0.09 & 0.11 & 0.12 & 0.28 &
+▃▇▅▁▁ \\
+category\_one\_defects & 0 & 1.00 & 0.48 & 2.55 & 0 & 0.00 & 0.00 & 0.00
+& 63.00 & ▇▁▁▁▁ \\
+quakers & 1 & 1.00 & 0.17 & 0.83 & 0 & 0.00 & 0.00 & 0.00 & 11.00 &
+▇▁▁▁▁ \\
+category\_two\_defects & 0 & 1.00 & 3.56 & 5.31 & 0 & 0.00 & 2.00 & 4.00
+& 55.00 & ▇▁▁▁▁ \\
+altitude\_low\_meters & 230 & 0.83 & 1750.71 & 8669.44 & 1 & 1100.00 &
+1310.64 & 1600.00 & 190164.00 & ▇▁▁▁▁ \\
+altitude\_high\_meters & 230 & 0.83 & 1799.35 & 8668.81 & 1 & 1100.00 &
+1350.00 & 1650.00 & 190164.00 & ▇▁▁▁▁ \\
+altitude\_mean\_meters & 230 & 0.83 & 1775.03 & 8668.63 & 1 & 1100.00 &
+1310.64 & 1600.00 & 190164.00 & ▇▁▁▁▁ \\
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#head(all\_ratings)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#nrow(all\_ratings)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# keep relevant columns}
+\NormalTok{subset\_coffee }\OtherTok{=}\NormalTok{ all\_ratings[}\FunctionTok{c}\NormalTok{(}\StringTok{"total\_cup\_points"}\NormalTok{, }\StringTok{"region"}\NormalTok{, }\StringTok{"processing\_method"}\NormalTok{, }\StringTok{"aroma"}\NormalTok{, }\StringTok{"aftertaste"}\NormalTok{, }\StringTok{"acidity"}\NormalTok{, }\StringTok{"body"}\NormalTok{, }\StringTok{"balance"}\NormalTok{, }\StringTok{"sweetness"}\NormalTok{, }\StringTok{"color"}\NormalTok{)]}
+\CommentTok{\#head(subset\_coffee)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# about 400 NAs so we will drop them}
+\FunctionTok{sum}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(subset\_coffee))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 447
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cleaned\_coffee }\OtherTok{=} \FunctionTok{drop\_na}\NormalTok{(subset\_coffee)}
+\CommentTok{\#head(cleaned\_coffee)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#nrow(cleaned\_coffee)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#ggplot(cleaned\_coffee, aes(x=total\_cup\_points)) + geom\_histogram() + labs(title="distribution of total cup points")}
+\CommentTok{\#print("top 5 regions:")}
+\CommentTok{\#sort(table(cleaned\_coffee$region), decreasing=TRUE)[1:5]}
+\CommentTok{\#print("most common processing methods:")}
+\CommentTok{\#sort(table(cleaned\_coffee$processing\_method), decreasing=TRUE)}
+\CommentTok{\#ggplot(cleaned\_coffee, aes(x=aroma)) + geom\_histogram() + labs(title="distribution of aroma")}
+\CommentTok{\#ggplot(cleaned\_coffee, aes(x=aftertaste)) + geom\_histogram() + labs(title="distribution of aftertaste")}
+\CommentTok{\#ggplot(cleaned\_coffee, aes(x=acidity)) + geom\_histogram() + labs(title="distribution of acidity")}
+\CommentTok{\#ggplot(cleaned\_coffee, aes(x=body)) + geom\_histogram() + labs(title="distribution of body")}
+\CommentTok{\#ggplot(cleaned\_coffee, aes(x=balance)) + geom\_histogram() + labs(title="distribution of balance")}
+\CommentTok{\#ggplot(cleaned\_coffee, aes(x=sweetness)) + geom\_histogram() + labs(title="distribution of sweetness")}
+\CommentTok{\#ggplot(cleaned\_coffee, aes(x=color)) + geom\_bar() + labs(title="Bar Chart of Color")}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#map(subset\_coffee, \textasciitilde{}sum(is.na(.)))}
+\end{Highlighting}
+\end{Shaded}
+
+Our overarching question is: how does the aftertaste of coffee affect
+satisfaction?
+
+First, we plot a correlation matrix to see the relationship between each
+pair of columns in the data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Correlation Matrix }
+\NormalTok{cleaned\_double\_coffee }\OtherTok{=}\NormalTok{ cleaned\_coffee[}\FunctionTok{c}\NormalTok{(}\StringTok{"total\_cup\_points"}\NormalTok{, }\StringTok{"aroma"}\NormalTok{, }\StringTok{"aftertaste"}\NormalTok{, }\StringTok{"acidity"}\NormalTok{, }\StringTok{"body"}\NormalTok{, }\StringTok{"balance"}\NormalTok{, }\StringTok{"sweetness"}\NormalTok{)]}
+\FunctionTok{cor}\NormalTok{(cleaned\_double\_coffee)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                  total_cup_points      aroma aftertaste    acidity       body
+## total_cup_points        1.0000000 0.66931783  0.8136102 0.67994729 0.64906558
+## aroma                   0.6693178 1.00000000  0.6594509 0.57202780 0.54542467
+## aftertaste              0.8136102 0.65945092  1.0000000 0.67080456 0.67224309
+## acidity                 0.6799473 0.57202780  0.6708046 1.00000000 0.60576938
+## body                    0.6490656 0.54542467  0.6722431 0.60576938 1.00000000
+## balance                 0.7642261 0.58432150  0.7560574 0.63141953 0.68504816
+## sweetness               0.4522062 0.07435127  0.1353185 0.08080553 0.06776468
+##                    balance  sweetness
+## total_cup_points 0.7642261 0.45220618
+## aroma            0.5843215 0.07435127
+## aftertaste       0.7560574 0.13531850
+## acidity          0.6314195 0.08080553
+## body             0.6850482 0.06776468
+## balance          1.0000000 0.11962640
+## sweetness        0.1196264 1.00000000
+\end{verbatim}
+
+We see that most of the columns are somewhat correlated to the total cup
+points, our outcome variable.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#table(cleaned\_coffee$processing\_method)}
+
+\CommentTok{\# Keeping only "Washed / Wet" processing method}
+ \CommentTok{\#cleaned\_coffee = cleaned\_coffee[cleaned\_coffee$processing\_method=="Washed / Wet",]}
+
+
+\NormalTok{cleaned\_coffee }\OtherTok{\textless{}{-}}\NormalTok{ cleaned\_coffee }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{processing\_washed\_or\_wet =}  \FunctionTok{case\_when}\NormalTok{(}
+\NormalTok{      processing\_method }\SpecialCharTok{==} \StringTok{"Washed / Wet"} \SpecialCharTok{\textasciitilde{}} \DecValTok{1}\NormalTok{,}
+\NormalTok{      processing\_method }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"Natural / Dry"}\NormalTok{, }\StringTok{"Pulped natural / honey"}\NormalTok{, }\StringTok{"Semi{-}washed / Semi{-}pulped"}\NormalTok{, }\StringTok{"Other"}\NormalTok{) }\SpecialCharTok{\textasciitilde{}} \DecValTok{0}\NormalTok{,}
+\NormalTok{    ))}
+
+\CommentTok{\#head(cleaned\_coffee)}
+\end{Highlighting}
+\end{Shaded}
+
+We plotted the relationships between pairs of variables, and found that
+we don't need any drastic transformations.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(cleaned\_coffee}\SpecialCharTok{$}\NormalTok{aftertaste, cleaned\_coffee}\SpecialCharTok{$}\NormalTok{total\_cup\_points)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Lab2_Prelim_files/figure-latex/unnamed-chunk-12-1.pdf}
+
+We are trying to investigate the effect of aftertaste on the total cup
+points. We first build a linear model that has just the variable of
+interest and the outcome variable.
+
+\hypertarget{modeling}{%
+\subsection{Modeling}\label{modeling}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model\_1 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(total\_cup\_points }\SpecialCharTok{\textasciitilde{}}\NormalTok{ aftertaste, }\AttributeTok{data=}\NormalTok{cleaned\_coffee)}
+\CommentTok{\#summary(model\_1)}
+\CommentTok{\# Coefficient interpretation: For a 1 unit increase in aftertaste, we expect total\_cup\_points to increase by about 6.47. We chose to examine the effect of aftertaste on our outcome variable because aftertaste has the highest correlation with total\_cup\_points.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+ \FunctionTok{stargazer}\NormalTok{(}
+\NormalTok{   model\_1, }
+   \AttributeTok{type =} \StringTok{\textquotesingle{}text\textquotesingle{}}\NormalTok{, }
+   \AttributeTok{se =} \FunctionTok{list}\NormalTok{(}\FunctionTok{get\_robust\_se}\NormalTok{(model\_1))}
+\NormalTok{   )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## ===============================================
+##                         Dependent variable:    
+##                     ---------------------------
+##                          total_cup_points      
+## -----------------------------------------------
+## aftertaste                   6.471***          
+##                               (0.260)          
+##                                                
+## Constant                     34.268***         
+##                               (1.952)          
+##                                                
+## -----------------------------------------------
+## Observations                   1,044           
+## R2                             0.662           
+## Adjusted R2                    0.662           
+## Residual Std. Error      1.533 (df = 1042)     
+## F Statistic         2,040.489*** (df = 1; 1042)
+## ===============================================
+## Note:               *p<0.1; **p<0.05; ***p<0.01
+\end{verbatim}
+
+We see that aftertaste is significant in determining total cup points.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#plot(model\_1)}
+\end{Highlighting}
+\end{Shaded}
+
+Next, we build another model that includes other factors we suspect will
+influence total cup points besides aftertaste. The covariates include
+aroma, acidity, body, and balance.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Model 2: adding covariates}
+\NormalTok{model\_2 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(total\_cup\_points }\SpecialCharTok{\textasciitilde{}}\NormalTok{ aftertaste }\SpecialCharTok{+}\NormalTok{ aroma }\SpecialCharTok{+}\NormalTok{ acidity }\SpecialCharTok{+}\NormalTok{ body }\SpecialCharTok{+}\NormalTok{ balance, }\AttributeTok{data=}\NormalTok{cleaned\_coffee)}
+\CommentTok{\#summary(model\_2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+ \FunctionTok{stargazer}\NormalTok{(}
+\NormalTok{   model\_2, }
+   \AttributeTok{type =} \StringTok{\textquotesingle{}text\textquotesingle{}}\NormalTok{, }
+   \AttributeTok{se =} \FunctionTok{list}\NormalTok{(}\FunctionTok{get\_robust\_se}\NormalTok{(model\_2))}
+\NormalTok{   )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## ===============================================
+##                         Dependent variable:    
+##                     ---------------------------
+##                          total_cup_points      
+## -----------------------------------------------
+## aftertaste                   3.151***          
+##                               (0.321)          
+##                                                
+## aroma                        1.390***          
+##                               (0.248)          
+##                                                
+## acidity                      1.194***          
+##                               (0.308)          
+##                                                
+## body                           0.321           
+##                               (0.257)          
+##                                                
+## balance                      2.069***          
+##                               (0.313)          
+##                                                
+## Constant                     21.358***         
+##                               (1.850)          
+##                                                
+## -----------------------------------------------
+## Observations                   1,044           
+## R2                             0.744           
+## Adjusted R2                    0.743           
+## Residual Std. Error      1.337 (df = 1038)     
+## F Statistic          603.216*** (df = 5; 1038) 
+## ===============================================
+## Note:               *p<0.1; **p<0.05; ***p<0.01
+\end{verbatim}
+
+In the results we see that the coefficient for aftertaste decreased,
+which indicates that the covariates absorb some of the causal effect.
+This is probably due to some causal effect between some of the
+covariates and aftertaste.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#plot(model\_2)}
+\end{Highlighting}
+\end{Shaded}
+
+Lastly, we make a model with an interaction term that investigates
+whether the processing method of the coffee beans affect aftertaste. By
+looking at the coefficient, we should be able to tell if the aftertaste
+is heterogenous whether coffee is processed wet or dry.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Model 3: include an interaction term}
+\NormalTok{model\_3 }\OtherTok{=} \FunctionTok{lm}\NormalTok{(total\_cup\_points }\SpecialCharTok{\textasciitilde{}}\NormalTok{ aftertaste }\SpecialCharTok{+}\NormalTok{ aroma }\SpecialCharTok{+}\NormalTok{ acidity }\SpecialCharTok{+}\NormalTok{ body }\SpecialCharTok{+}\NormalTok{ balance }\SpecialCharTok{+}\NormalTok{ processing\_washed\_or\_wet }\SpecialCharTok{+}\NormalTok{ processing\_washed\_or\_wet }\SpecialCharTok{*}\NormalTok{ aftertaste , }\AttributeTok{data=}\NormalTok{cleaned\_coffee)}
+\CommentTok{\#summary(model\_3)}
+
+\CommentTok{\# The effect of aftertaste is consistent/homogenous regardless of using the processing method "Washed / Wet"  (there is no significant effect)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+ \FunctionTok{stargazer}\NormalTok{(}
+\NormalTok{   model\_3, }
+   \AttributeTok{type =} \StringTok{\textquotesingle{}text\textquotesingle{}}\NormalTok{, }
+   \AttributeTok{se =} \FunctionTok{list}\NormalTok{(}\FunctionTok{get\_robust\_se}\NormalTok{(model\_3))}
+\NormalTok{   )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## ===============================================================
+##                                         Dependent variable:    
+##                                     ---------------------------
+##                                          total_cup_points      
+## ---------------------------------------------------------------
+## aftertaste                                   3.285***          
+##                                               (0.535)          
+##                                                                
+## aroma                                        1.369***          
+##                                               (0.250)          
+##                                                                
+## acidity                                      1.143***          
+##                                               (0.297)          
+##                                                                
+## body                                           0.367           
+##                                               (0.261)          
+##                                                                
+## balance                                      2.080***          
+##                                               (0.316)          
+##                                                                
+## processing_washed_or_wet                       1.129           
+##                                               (4.660)          
+##                                                                
+## aftertaste:processing_washed_or_wet           -0.129           
+##                                               (0.619)          
+##                                                                
+## Constant                                     20.351***         
+##                                               (4.659)          
+##                                                                
+## ---------------------------------------------------------------
+## Observations                                   1,044           
+## R2                                             0.745           
+## Adjusted R2                                    0.743           
+## Residual Std. Error                      1.336 (df = 1036)     
+## F Statistic                          432.031*** (df = 7; 1036) 
+## ===============================================================
+## Note:                               *p<0.1; **p<0.05; ***p<0.01
+\end{verbatim}
+
+We observed that the coefficient for the interaction term changed
+slightly. This means that there is an effect (albeit small) of
+processing method on the aftertaste. This intuitively makes sense, as
+cleaning dirt or foreign objects from the coffee beans will improve
+taste.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#plot(model\_3)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{results}{%
+\subsection{Results}\label{results}}
+
+We found that aftertaste is statistically significant in determining the
+the rating of a coffee. Thus it is important for farmers of coffee beans
+to improve aftertaste if they want to receive higher scores, which will
+command higher prices. Farmers can pay attention to the processing
+method of coffee beans, which we found affects aftertaste.
+
+It is important to recognize that aftertaste determines rating by a
+relatively large margin, followed by balance of the coffee. The
+appearence or ``body'' of the bean is the least important in determining
+rating.
+
+\hypertarget{limitations}{%
+\subsection{Limitations}\label{limitations}}
+
+(Statistical Limitation) One of our model assumptions is that our data
+is IID. Since each rating for a coffee bean may come from a different
+certification, the ratings come from different distributions. As the
+chart below shows, Specialty Coffee Association has the highest number
+of ratings given.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(all\_ratings, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{y=}\NormalTok{certification\_body)) }\SpecialCharTok{+} \FunctionTok{geom\_bar}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title=}\StringTok{"distribution of certification\_body"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Lab2_Prelim_files/figure-latex/unnamed-chunk-22-1.pdf}
+
+\end{document}

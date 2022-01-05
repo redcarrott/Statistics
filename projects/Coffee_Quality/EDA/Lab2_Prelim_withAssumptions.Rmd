@@ -1,0 +1,314 @@
+---
+title: "W203 Lab 2 Preliminary Report"
+author: "Angela Guan, Amy Jung, Jeremy Yeung"
+
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r load packages, message = FALSE}
+
+library(tidyverse)
+library(ggplot2) 
+
+library(sandwich)
+library(stargazer)
+
+source('get_robust_se.R')
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+options(tinytex.verbose = TRUE)
+```
+
+```{r,  message = FALSE}
+coffee_ratings <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-07/coffee_ratings.csv')
+#head(coffee_ratings)
+```
+
+```{r,message = FALSE, echo=FALSE}
+# cleaning script
+library(tidyverse)
+# install.packages("janitor")
+#install.packages("skimr")
+
+raw_arabica <- read_csv("https://raw.githubusercontent.com/jldbc/coffee-quality-database/master/data/arabica_data_cleaned.csv") %>% 
+  janitor::clean_names()
+
+raw_robusta <- read_csv("https://raw.githubusercontent.com/jldbc/coffee-quality-database/master/data/robusta_data_cleaned.csv",
+                        col_types = cols(
+                          X1 = col_double(),
+                          Species = col_character(),
+                          Owner = col_character(),
+                          Country.of.Origin = col_character(),
+                          Farm.Name = col_character(),
+                          Lot.Number = col_character(),
+                          Mill = col_character(),
+                          ICO.Number = col_character(),
+                          Company = col_character(),
+                          Altitude = col_character(),
+                          Region = col_character(),
+                          Producer = col_character(),
+                          Number.of.Bags = col_double(),
+                          Bag.Weight = col_character(),
+                          In.Country.Partner = col_character(),
+                          Harvest.Year = col_character(),
+                          Grading.Date = col_character(),
+                          Owner.1 = col_character(),
+                          Variety = col_character(),
+                          Processing.Method = col_character(),
+                          Fragrance...Aroma = col_double(),
+                          Flavor = col_double(),
+                          Aftertaste = col_double(),
+                          Salt...Acid = col_double(),
+                          Balance = col_double(),
+                          Uniform.Cup = col_double(),
+                          Clean.Cup = col_double(),
+                          Bitter...Sweet = col_double(),
+                          Cupper.Points = col_double(),
+                          Total.Cup.Points = col_double(),
+                          Moisture = col_double(),
+                          Category.One.Defects = col_double(),
+                          Quakers = col_double(),
+                          Color = col_character(),
+                          Category.Two.Defects = col_double(),
+                          Expiration = col_character(),
+                          Certification.Body = col_character(),
+                          Certification.Address = col_character(),
+                          Certification.Contact = col_character(),
+                          unit_of_measurement = col_character(),
+                          altitude_low_meters = col_double(),
+                          altitude_high_meters = col_double(),
+                          altitude_mean_meters = col_double()
+                        )) %>% 
+  janitor::clean_names() %>% 
+  rename(acidity = salt_acid, sweetness = bitter_sweet,
+         aroma = fragrance_aroma, body = mouthfeel,uniformity = uniform_cup)
+
+
+all_ratings <- bind_rows(raw_arabica, raw_robusta) %>% 
+  select(-x1) %>% 
+  select(total_cup_points, species, everything())
+
+#all_ratings %>% 
+ # skimr::skim()
+
+all_ratings %>% 
+  write_csv("coffee_ratings.csv")
+
+```
+
+```{r, message = FALSE}
+#head(all_ratings)
+```
+
+```{r, message = FALSE}
+#nrow(all_ratings)
+```
+
+```{r, message = FALSE}
+# keep relevant columns
+subset_coffee = all_ratings[c("total_cup_points", "region", "processing_method", "aroma", "aftertaste", "acidity", "body", "balance", "sweetness", "color")]
+#head(subset_coffee)
+```
+
+```{r, message = FALSE}
+# about 400 NAs so we will drop them
+sum(is.na(subset_coffee))
+cleaned_coffee = drop_na(subset_coffee)
+#head(cleaned_coffee)
+```
+
+```{r, message = FALSE}
+#nrow(cleaned_coffee)
+```
+
+```{r, message = FALSE}
+#ggplot(cleaned_coffee, aes(x=total_cup_points)) + geom_histogram() + labs(title="distribution of total cup points")
+#print("top 5 regions:")
+#sort(table(cleaned_coffee$region), decreasing=TRUE)[1:5]
+#print("most common processing methods:")
+#sort(table(cleaned_coffee$processing_method), decreasing=TRUE)
+#ggplot(cleaned_coffee, aes(x=aroma)) + geom_histogram() + labs(title="distribution of aroma")
+#ggplot(cleaned_coffee, aes(x=aftertaste)) + geom_histogram() + labs(title="distribution of aftertaste")
+#ggplot(cleaned_coffee, aes(x=acidity)) + geom_histogram() + labs(title="distribution of acidity")
+#ggplot(cleaned_coffee, aes(x=body)) + geom_histogram() + labs(title="distribution of body")
+#ggplot(cleaned_coffee, aes(x=balance)) + geom_histogram() + labs(title="distribution of balance")
+#ggplot(cleaned_coffee, aes(x=sweetness)) + geom_histogram() + labs(title="distribution of sweetness")
+#ggplot(cleaned_coffee, aes(x=color)) + geom_bar() + labs(title="Bar Chart of Color")
+```
+
+```{r, message = FALSE}
+#map(subset_coffee, ~sum(is.na(.)))
+```
+
+
+Our overarching question is: how does the acidity of coffee affect satisfaction? 
+
+First, we plot a correlation matrix to see the relationship between each pair of columns in the data.
+
+```{r}
+# Correlation Matrix 
+cleaned_double_coffee = cleaned_coffee[c("total_cup_points", "aroma", "aftertaste", "acidity", "body", "balance", "sweetness")]
+cor(cleaned_double_coffee)
+```
+
+We see that most of the columns are somewhat correlated to the total cup points, our outcome variable. 
+
+```{r, message = FALSE}
+#table(cleaned_coffee$processing_method)
+
+# Keeping only "Washed / Wet" processing method
+ #cleaned_coffee = cleaned_coffee[cleaned_coffee$processing_method=="Washed / Wet",]
+
+
+cleaned_coffee <- cleaned_coffee %>%
+    mutate(
+    processing_washed_or_wet =  case_when(
+      processing_method == "c" ~ 1,
+      processing_method %in% c("Natural / Dry", "Pulped natural / honey", "Semi-washed / Semi-pulped", "Other") ~ 0,
+    ))
+
+#head(cleaned_coffee)
+
+
+```
+
+We plotted the relationships between pairs of variables, and found that we don't need any drastic transformations.
+
+```{r}
+plot(cleaned_coffee$acidity, cleaned_coffee$total_cup_points, xlab="Acidity", ylab="total_cup_points", main="Scatterplot of Acidity vs. Total Cup Points")
+```
+
+We are trying to investigate the effect of acditiy on the total cup points. We first build a linear model that has just the variable of interest and the outcome variable.
+
+## Modeling
+```{r, message=FALSE}
+model_1 = lm(total_cup_points ~ acidity, data=cleaned_coffee)
+summary(model_1)
+
+```
+
+```{r}
+ stargazer(
+   model_1, 
+   type = 'text', 
+   se = list(get_robust_se(model_1))
+   )
+```
+
+For a 1 unit increase in aftertaste, we expect total_cup_points to increase by about 5.875. We chose to examine the effect of aftertaste on our outcome variable because aftertaste has the highest correlation with total_cup_points. We see that acidity is significant in determining total cup points. Since the p-value for the coefficient on acidity is less than 0.05.
+
+```{r, message = FALSE}
+#plot(model_1)
+```
+
+Next, we build another model that includes other factors we suspect will influence total cup points besides acidity The covariates include aroma, aftertaste, body, and balance. This shows 
+
+```{r, message=FALSE}
+# Model 2: adding covariates
+model_2 = lm(total_cup_points ~ acidity + aftertaste + aroma + body + balance, data=cleaned_coffee)
+summary(model_2)
+```
+
+```{r}
+ stargazer(
+   model_2, 
+   type = 'text', 
+   se = list(get_robust_se(model_2))
+   )
+```
+
+In the results we see that the coefficient for aftertaste decreased, which indicates that the covariates absorb some of the causal effect. This is probably due to a correlation between some of the additional covariates and acidity, which may lead to a causal effect. In this model, we added these additional covariates to remove omitted variable bias present in model 1.
+
+```{r, message = FALSE}
+#plot(model_2)
+```
+
+Lastly, we make a model with an interaction term that investigates whether the processing method of the coffee beans affect acidity. By looking at the coefficient, we should be able to tell if the acidity is heterogeneous whether coffee is processed wet or dry. 
+
+```{r, message=FALSE}
+# Model 3: include an interaction term
+model_3 = lm(total_cup_points ~ acidity + aftertaste + aroma + body + balance + processing_washed_or_wet + processing_washed_or_wet * acidity , data=cleaned_coffee)
+summary(model_3)
+
+# The effect of acidity is consistent/homogenous regardless of using the processing method "Washed / Wet"  (there is no significant effect)
+```
+
+```{r}
+ stargazer(
+   model_3, 
+   type = 'text', 
+   se = list(get_robust_se(model_3))
+   )
+```
+
+We observed that the coefficient for the acidity term did not fluctuate drastically from about 1.194 to about 1.237, and since the p-value for the acidity coefficient remains less than 0.05, it is significant, indicating acidity does affect total_cup_points.
+
+We introduce an additional covariate, processing_method, which represents whether or not the processing method is "Washed / Wet". The processsing method is not significant itself. Whether we interact processing method with acidity to investigate whether the processing method of the coffee beans affects acidity, we find that acidity is heterogeneous whether coffee is processed wet or dry. In other words, the effect of acidity on total_cup_points does not change whether or not "Washed / Wet" processing method is introduced.
+
+```{r, message = FALSE}
+#plot(model_3)
+```
+
+```{r}
+# Putting 3 model outputs together
+ stargazer(
+   model_1, model_2, model_3,
+   type = 'text', 
+   se = list(get_robust_se(model_2))
+   )
+```
+
+## Results
+
+We found that acidity is statistically significant in determining the the rating of a coffee. Thus it is important for owners of coffee beans to improve acidity if they want to receive higher scores, which will command higher prices. owners can pay attention to the processing method of coffee beans, which we found affects acidity.
+
+From our model 3 output, we find that aftertaste determines rating by a relatively large margin, followed by balance of the coffee. The appearence or "body" of the bean is the least important in determining rating. 
+
+## Limitations
+
+(Statistical Limitation) One of our model assumptions is that our data is independent and identically distributed (IID). Each sample is independent because coffee bean owner sends in their coffee sample to be evaluated by the Coffee Quality Institute (CQI). Even if a coffee owner submits multiple times, each sample submission is from a different batch of coffee. Since each rating for a coffee bean may come from a different certification, the ratings come from different distributions. As the chart below shows, "Specialty Coffee Association" has the highest number of ratings given.  And so, there might be a violation to identically distributed data. 
+
+### Other CLM Assumptions
+
+No perfect colinearity: Running our model lm(y ~ x), did not drop any variables, which indicates no perfect colinearity. In addition, our correlation matrix shows that none of the variables are perfectly colinear (ie. correlation equal to 1).
+
+Linear conditional expectation: Upon looking at the residual vs. fitted values, model_1 and model_2 have a flat line (zero slope) of conditional expectation, therefore, upholding the linear conditional expectation assumption. However, model_3 shows a slight downward negative slope for the residual vs. fitted values, therefore violating this assumption. In this case, we should consider non-linear relationships when modeling model_3, like a polynomial relationship, by transforming the response and/or predictor variables. 
+
+```{r}
+plot(model_1)
+plot(model_2)
+plot(model_3)
+```
+
+Homoskedastic errors: The residual vs. fitted graphs above show very little change of band thickness (how fat/thick the scatter is). Therefore, we conclude that the homoskedastic errors assumption is met for all three models. 
+
+Normally distributed errors: As seen below, the residuals for all three models look a bit skewed (not completely normally distributed); therefore, the assumption of normally distributed errors may not stand. In this case, we can use the Box-Cox (1964) method for choosing the best transformation from the set of power transformations to correct for this violation. 
+
+```{r}
+hist(resid(model_1))
+hist(resid(model_2))
+hist(resid(model_3))
+```
+
+
+
+(Structural Limitation) Some omitted variables that we were not able to measure and include in the analysis are grind size (granularity of ground coffee), water temperature, and ripeness (time from roast to brewing).
+
+Grind size: A smaller grind size results in stronger taste, which increases taste features such as acidity and balance, because there is more surface area that is exposed to the water when brewing the coffee. Although it depends on preference, coffee drinkers typically do not prefer watered down coffee; therefore, grind size is negatively correlated with total_cup_points. And so, there is a positive omitted variable bias (OVB) that points away from 0, so we measure an effect on acidity which is larger than what it actually is due to OVB. 
+
+Water temperature: As long as the water temperature is in the optimal coffee brewing range, higher temperature water extracts coffee more efficiently, which results in more flavor. So there is positive omitted variable bias present.
+
+Ripeness: After brewing, a period of degassing is required. As the ripeness, or time between roast and brew, increases, more gas is allowed to depart the mean, which makes it more permeable for water when it comes to extracting. If water can't permeate suitably during coffee extraction, this may result in a weak and sour flavor profile. Similarly, this would be positive omitted variable bias. 
+
+The omission of this variable does call into question the core results. However, our data comes from the Coffee Quality Institute, where we assume there is a standardized process for evaluating coffee quality. Therefore, we assumed the extraction and brewing methods are consistent across all coffee. Future data we could collect that would resolve any omitted variables bias may include coffee extraction in brewing data. 
+
+
+```{r}
+ggplot(all_ratings, aes(y=certification_body)) + geom_bar() + labs(title="Distribution of certification_body")
+```
